@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "./Desktop-app/Password_Manager",
+        "./Desktop-app/Password_Manager"
+    ]
+}
