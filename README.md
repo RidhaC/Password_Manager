@@ -1,5 +1,3 @@
-# Access Guardians 
-
 ## Project summary
 The password manager project aims to create a secure and dependable application that helps people store and manage their login information safely. Weak, reused, or outdated passwords are still one of the main reasons data breaches occur, and many users struggle to keep track of multiple accounts across different platforms. While many password management tools exist, some lack features that promote strong password habits or sacrifice usability for security, which can discourage consistent use.
 
@@ -57,3 +55,4 @@ In addition to security, usability was a key focus in the final system. The inte
 
 To install everything at once: ```pip install customtkinter cryptography pyotp qrcode image``` OR ```run pip install -r requirements.txt``` to run and install all packages from a dependency file
 
+#
