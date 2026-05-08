@@ -1,4 +1,4 @@
-# Access Guardians — Password Manager
+# Access Guardians - Password Manager
 
 A secure local desktop password manager built with Python, Flask, and Electron.
 
@@ -9,24 +9,24 @@ A secure local desktop password manager built with Python, Flask, and Electron.
 
 ## Setup
 
-**1 — Clone the repo:**
+**1 - Clone the repo:**
 ```bash
 git clone https://github.com/RidhaC/Password_Manager.git
 cd Password_Manager
 ```
 
-**2 — Install Python dependencies:**
+**2 - Install Python dependencies:**
 ```bash
 pip install -r requirements.txt
 ```
 
-**3 — Install Electron dependencies:**
+**3 - Install Electron dependencies:**
 ```bash
 cd electron-app
 npm install
 ```
 
-**4 — Run the app:**
+**4 - Run the app:**
 ```bash
 npm start
 ```
