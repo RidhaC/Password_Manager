@@ -33,6 +33,10 @@ npm start
 
 This starts the Flask backend and opens the app window automatically.
 
+## Creating a Desktop Shortcut (Windows)
+
+After setup, right click `electron-app/AccessGuardians.vbs` and click **Create Shortcut**, then move the shortcut to your desktop. Right click the shortcut, go to Properties, Change Icon, and point it to `electron-app/logo.ico`.
+
 ## Security
 
 - All passwords are encrypted with AES-256-GCM
