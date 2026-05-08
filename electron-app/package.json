@@ -1,0 +1,30 @@
+{
+  "name": "access-guardians",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "author": "Ridha Chehime",
+  "license": "ISC",
+  "description": "Access Guardians Password Manager",
+  "build": {
+    "appId": "com.ridhachehime.accessguardians",
+    "productName": "Access Guardians",
+    "icon": "logo.ico",
+    "win": {
+      "target": "portable",
+      "icon": "logo.ico"
+    },
+    "files": [
+      "main.js",
+      "logo.ico",
+      "package.json"
+    ]
+  },
+  "devDependencies": {
+    "electron": "^22.0.0",
+    "electron-builder": "^24.0.0"
+  }
+}

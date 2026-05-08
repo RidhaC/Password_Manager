@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Access Guardians</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #0d1117;
+    --surface:   #161b22;
+    --surface2:  #21262d;
+    --border:    #30363d;
+    --accent:    #00ff9d;
+    --blue:      #388bfd;
+    --danger:    #f85149;
+    --warning:   #d29922;
+    --success:   #3fb950;
+    --text:      #e6edf3;
+    --muted:     #7d8590;
+    --mono:      'Space Mono', monospace;
+    --sans:      'Inter', sans-serif;
+  }
+
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--sans); }
+
+  /* grid background */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,157,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,157,0.025) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none; z-index: 0;
+  }
+
+  .page {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 1rem;
+  }
+
+  .logo {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 0.25em;
+    margin-bottom: 2rem;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 6px var(--accent)} 50%{box-shadow:0 0 16px var(--accent)} }
+
+  .card {
+    width: 100%; max-width: 400px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    background: var(--surface2);
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-header h1 { font-size: 1.2rem; font-weight: 600; }
+  .card-header p  { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+
+  .card-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+
+  label { display: block; font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.15em; color: var(--muted); margin-bottom: 6px; }
+
+  input[type="text"], input[type="password"] {
+    width: 100%; height: 40px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--mono); font-size: 0.85rem;
+    padding: 0 12px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(56,139,253,0.15); }
+
+  .show-row { display: flex; align-items: center; gap: 8px; }
+  .show-row input[type="checkbox"] { accent-color: var(--blue); width: 14px; height: 14px; }
+  .show-row span { font-size: 0.8rem; color: var(--muted); }
+
+  .btn {
+    display: block; width: 100%; height: 42px;
+    border: none; border-radius: 6px;
+    font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.06em;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-primary { background: var(--blue); color: #fff; }
+  .btn-primary:hover { background: #2f6fd0; }
+  .btn-ghost  { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); margin-top: 4px; }
+  .btn-ghost:hover  { color: var(--text); border-color: var(--muted); }
+
+  .error-msg {
+    background: rgba(248,81,73,0.1);
+    border: 1px solid rgba(248,81,73,0.3);
+    border-radius: 6px;
+    color: var(--danger);
+    font-size: 0.82rem;
+    padding: 10px 14px;
+    display: none;
+  }
+
+  /* OTP overlay */
+  .overlay {
+    display: none; position: fixed; inset: 0; z-index: 100;
+    background: rgba(0,0,0,0.75);
+    align-items: center; justify-content: center;
+  }
+  .overlay.active { display: flex; }
+  .otp-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 360px; overflow: hidden;
+  }
+  .otp-card .card-header { text-align: center; }
+  .otp-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 0.85rem; align-items: center; }
+  .otp-input {
+    width: 180px; height: 56px; text-align: center;
+    font-family: var(--mono); font-size: 1.6rem; letter-spacing: 0.3em;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--accent); outline: none;
+  }
+  .otp-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,255,157,0.12); }
+  .otp-row { display: flex; gap: 8px; width: 100%; }
+  .otp-row .btn { flex: 1; height: 38px; font-size: 0.75rem; }
+  .btn-accent { background: rgba(0,255,157,0.1); color: var(--accent); border: 1px solid rgba(0,255,157,0.3); }
+  .btn-accent:hover { background: rgba(0,255,157,0.18); }
+  .btn-danger-ghost { background: rgba(248,81,73,0.08); color: var(--danger); border: 1px solid rgba(248,81,73,0.25); }
+  .status { font-size: 0.8rem; min-height: 18px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="logo"><span class="logo-dot"></span>ACCESS GUARDIANS</div>
+
+  <div class="card">
+    <div class="card-header">
+      <h1>Welcome back</h1>
+      <p>Sign in to your vault</p>
+    </div>
+    <div class="card-body">
+      <div class="error-msg" id="err"></div>
+      <div>
+        <label>USERNAME</label>
+        <input type="text" id="username" placeholder="Enter username" autocomplete="off" />
+      </div>
+      <div>
+        <label>PASSWORD</label>
+        <input type="password" id="password" placeholder="Enter password" />
+      </div>
+      <div class="show-row">
+        <input type="checkbox" id="showpw" onchange="document.getElementById('password').type = this.checked ? 'text' : 'password'">
+        <span>Show password</span>
+      </div>
+      <button class="btn btn-primary" onclick="doLogin()">LOGIN</button>
+      <button class="btn btn-ghost" onclick="location.href='/create-account'">Create new account →</button>
+    </div>
+  </div>
+</div>
+
+<!-- OTP Overlay -->
+<div class="overlay" id="otpOverlay">
+  <div class="otp-card">
+    <div class="card-header">
+      <h1>Two-Factor Auth</h1>
+      <p>Enter your authenticator code or backup code</p>
+    </div>
+    <div class="otp-body">
+      <input class="otp-input" id="otpCode" maxlength="12" placeholder="000000" autocomplete="off" />
+      <div class="status" id="otpStatus" style="color:var(--danger)"></div>
+      <div class="otp-row">
+        <button class="btn btn-primary" onclick="verifyOTP(false)">VERIFY CODE</button>
+        <button class="btn btn-accent" onclick="verifyOTP(true)">BACKUP CODE</button>
+      </div>
+      <button class="btn btn-danger-ghost" onclick="document.getElementById('otpOverlay').classList.remove('active')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function showErr(msg) {
+  const e = document.getElementById('err');
+  e.textContent = msg; e.style.display = 'block';
+}
+
+async function doLogin() {
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value;
+  if (!u || !p) { showErr('Please enter username and password.'); return; }
+
+  const res = await fetch('/login', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({username: u, password: p})
+  });
+  const data = await res.json();
+  if (!res.ok) { showErr(data.error); return; }
+  if (data.next === 'otp') {
+    document.getElementById('otpOverlay').classList.add('active');
+    document.getElementById('otpCode').focus();
+  }
+}
+
+async function verifyOTP(backup) {
+  const code = document.getElementById('otpCode').value.trim();
+  const status = document.getElementById('otpStatus');
+  if (!code) { status.textContent = 'Enter a code.'; return; }
+
+  const res = await fetch('/verify-otp', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({code, backup})
+  });
+  const data = await res.json();
+  if (!res.ok) { status.textContent = data.error; return; }
+  location.href = data.next;
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (document.getElementById('otpOverlay').classList.contains('active')) verifyOTP(false);
+    else doLogin();
+  }
+});
+</script>
+</body>
+</html>

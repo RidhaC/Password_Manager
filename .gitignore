@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pycache/
+*.egg-info/
+dist/
+build/
+
+# Database — never commit this, contains real passwords
+vault_accounts.db
+
+# Electron
+electron-app/node_modules/
+electron-app/dist/
+
+# VS Code
+.vscode/
+
+# Environment
+.env
+*.env
+
+# PyInstaller
+*.spec
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
