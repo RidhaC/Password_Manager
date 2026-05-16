@@ -1,16 +1,10 @@
 # database/security.py
-"""
-Security helpers:
-- Login attempt lockout (throttles brute-force)
-- TOTP backup codes (hashed, one-time use)
-"""
 
 import time
 import hashlib
 from typing import List, Tuple
 from .connection import get_connection
 
-# --- internal helpers ---
 
 def _username_hash(username: str) -> str:
     return hashlib.sha256(username.encode("utf-8")).hexdigest()
@@ -24,7 +18,6 @@ def _get_user_id(username: str):
     conn.close()
     return row[0] if row else None
 
-# --- schema ---
 
 def ensure_security_tables():
     conn = get_connection()
@@ -49,10 +42,8 @@ def ensure_security_tables():
     conn.commit()
     conn.close()
 
-# --- lockout API ---
 
 def is_user_locked(username: str) -> Tuple[bool, int]:
-    """Return (locked?, seconds_remaining)."""
     uid = _get_user_id(username)
     if not uid:
         return False, 0
@@ -68,7 +59,6 @@ def is_user_locked(username: str) -> Tuple[bool, int]:
     return False, 0
 
 def register_failed_attempt(username: str, max_attempts: int, lockout_seconds: int) -> int:
-    """Increment attempts; lock if >= max_attempts. Return attempts remaining before lock."""
     uid = _get_user_id(username)
     if not uid:
         return 0
@@ -107,9 +97,9 @@ def reset_attempts(username: str):
 def _hash_code(code: str) -> str:
     return hashlib.sha256(code.encode("utf-8")).hexdigest()
 
-def generate_backup_codes(n: int = 10, length: int = 10) -> List[str]:
+def generate_backup_codes(n: int = 10, length: int = 12) -> List[str]:
     import secrets
-    alphabet = "0123456789"
+    alphabet = "0123456789ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz"
     return ["".join(secrets.choice(alphabet) for _ in range(length)) for __ in range(n)]
 
 def store_backup_codes(username: str, plain_codes: List[str]) -> None:

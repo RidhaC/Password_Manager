@@ -4,262 +4,103 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Create Account - Access Guardians</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg:#0d1117; --surface:#161b22; --surface2:#21262d; --border:#30363d;
-    --accent:#00ff9d; --blue:#388bfd; --danger:#f85149; --warning:#d29922;
-    --success:#3fb950; --text:#e6edf3; --muted:#7d8590;
-    --mono:'Space Mono',monospace; --sans:'Inter',sans-serif;
-  }
-  html,body { min-height:100%; background:var(--bg); color:var(--text); font-family:var(--sans); }
-  body::before {
-    content:''; position:fixed; inset:0;
-    background-image: linear-gradient(rgba(0,255,157,0.025) 1px,transparent 1px), linear-gradient(90deg,rgba(0,255,157,0.025) 1px,transparent 1px);
-    background-size:48px 48px; pointer-events:none; z-index:0;
-  }
-  .page { position:relative; z-index:1; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:2rem 1rem; }
-  .logo { font-family:var(--mono); font-size:0.72rem; color:var(--accent); letter-spacing:0.25em; margin-bottom:1.5rem; display:flex; align-items:center; gap:10px; }
-  .logo-dot { width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); }
-  .card { width:100%; max-width:420px; background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
-  .card-header { background:var(--surface2); padding:1.25rem 1.5rem; border-bottom:1px solid var(--border); }
-  .card-header h1 { font-size:1.15rem; font-weight:600; }
-  .card-header p { font-size:0.78rem; color:var(--muted); margin-top:2px; }
-  .card-body { padding:1.5rem; display:flex; flex-direction:column; gap:1rem; }
-  label { display:block; font-family:var(--mono); font-size:0.63rem; letter-spacing:0.15em; color:var(--muted); margin-bottom:5px; }
-  input[type=text], input[type=password] {
-    width:100%; height:40px; background:var(--surface2); border:1px solid var(--border);
-    border-radius:6px; color:var(--text); font-family:var(--mono); font-size:0.83rem;
-    padding:0 12px; outline:none; transition:border-color 0.2s,box-shadow 0.2s;
-  }
-  input:focus { border-color:var(--blue); box-shadow:0 0 0 3px rgba(56,139,253,0.15); }
-  .strength-bar { height:3px; background:var(--border); border-radius:2px; margin-top:6px; overflow:hidden; }
-  .strength-fill { height:100%; width:0; transition:width 0.4s,background 0.3s; border-radius:2px; }
-  .strength-text { font-family:var(--mono); font-size:0.63rem; margin-top:4px; }
-  .gen-row { display:flex; align-items:center; gap:8px; }
-  .gen-row input[type=number] { width:70px; height:36px; background:var(--surface2); border:1px solid var(--border); border-radius:6px; color:var(--text); font-family:var(--mono); font-size:0.82rem; padding:0 8px; outline:none; }
-  .btn { display:block; width:100%; height:42px; border:none; border-radius:6px; font-family:var(--mono); font-size:0.78rem; letter-spacing:0.06em; cursor:pointer; transition:all 0.2s; }
-  .btn-primary { background:var(--blue); color:#fff; }
-  .btn-primary:hover { background:#2f6fd0; }
-  .btn-ghost { background:var(--surface2); color:var(--muted); border:1px solid var(--border); margin-top:4px; }
-  .btn-ghost:hover { color:var(--text); border-color:var(--muted); }
-  .btn-gen { height:36px; padding:0 14px; background:rgba(56,139,253,0.12); color:var(--blue); border:1px solid rgba(56,139,253,0.3); border-radius:6px; font-family:var(--mono); font-size:0.73rem; cursor:pointer; white-space:nowrap; transition:all 0.2s; }
-  .btn-gen:hover { background:rgba(56,139,253,0.22); }
-  .show-row { display:flex; align-items:center; gap:8px; }
-  .show-row input { accent-color:var(--blue); width:14px; height:14px; }
-  .show-row span { font-size:0.8rem; color:var(--muted); }
-  .err { background:rgba(248,81,73,0.1); border:1px solid rgba(248,81,73,0.3); border-radius:6px; color:var(--danger); font-size:0.8rem; padding:10px 14px; display:none; }
-
-  /* 2FA modal */
-  .modal { display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; }
-  .modal.active { display:flex; }
-  .modal-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; width:400px; max-width:95vw; overflow:hidden; }
-  .modal-header { background:var(--surface2); padding:1rem 1.5rem; border-bottom:1px solid var(--border); text-align:center; }
-  .modal-header h2 { font-size:1.05rem; font-weight:600; }
-  .modal-header p { font-size:0.78rem; color:var(--muted); margin-top:2px; }
-  .modal-body { padding:1.5rem; display:flex; flex-direction:column; align-items:center; gap:1rem; }
-  .modal-body img { border-radius:8px; border:2px solid var(--border); }
-  .otp-input { width:160px; height:52px; text-align:center; font-family:var(--mono); font-size:1.5rem; letter-spacing:0.3em; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:var(--accent); outline:none; }
-  .otp-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(0,255,157,0.12); }
-  .status { font-size:0.8rem; color:var(--danger); min-height:16px; }
-
-  /* backup codes */
-  .codes-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; width:100%; }
-  .code-chip { background:var(--surface2); border:1px solid var(--border); border-radius:6px; font-family:var(--mono); font-size:0.82rem; color:var(--accent); text-align:center; padding:8px 6px; letter-spacing:0.1em; }
-  .modal-row { display:flex; gap:8px; width:100%; }
-  .modal-row .btn { flex:1; height:38px; font-size:0.73rem; }
-  .btn-success { background:var(--success); color:#0d1117; }
-  .btn-success:hover { background:#33a244; }
-</style>
+<link rel="icon" href="/static/favicon.ico"/>
+<link rel="stylesheet" href="/static/css/base.css"/>
+<link rel="stylesheet" href="/static/css/create.css"/>
 </head>
 <body>
+<div class="titlebar">
+  <img src="/static/logo_transparent.png"/>
+  <span>Access Guardians</span>
+</div>
 <div class="page">
-  <div class="logo"><span class="logo-dot"></span>ACCESS GUARDIANS</div>
-  <div class="card">
-    <div class="card-header">
+  <div class="create-wrap">
+
+    <div class="brand">
+      <div class="brand-icon" style="background:none;box-shadow:none;padding:0">
+        <img src="/static/logo_transparent.png" width="72" height="72" style="object-fit:contain"/>
+      </div>
       <h1>Create Account</h1>
       <p>Set up your secure local vault</p>
     </div>
-    <div class="card-body">
-      <div class="err" id="err"></div>
+
+    <div class="card">
+      <div class="err-banner" id="err"></div>
+
       <div>
-        <label>USERNAME</label>
-        <input type="text" id="username" placeholder="Choose a username" autocomplete="off"/>
+        <label class="field-label">Username</label>
+        <input class="input" type="text" id="username" placeholder="Choose a username" autocomplete="off"/>
       </div>
+
       <div>
-        <label>PASSWORD</label>
-        <input type="password" id="password" placeholder="Min 16 chars, upper, lower, symbol" oninput="checkStrength()"/>
-        <div class="strength-bar"><div class="strength-fill" id="sbar"></div></div>
-        <div class="strength-text" id="stext" style="color:var(--muted)">Strength: —</div>
+        <label class="field-label">Password</label>
+        <div style="position:relative">
+          <input class="input" type="password" id="password" placeholder="Min 16 chars, upper, lower, symbol" oninput="checkStrength()" style="padding-right:44px"/>
+          <button class="btn-icon" onclick="toggleCreatePw('password', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%)" title="Show password">👁</button>
+        </div>
+        <div class="strength-track"><div class="strength-fill" id="sbar"></div></div>
+        <div class="strength-label" id="stext">Strength: —</div>
       </div>
+
       <div>
-        <label>CONFIRM PASSWORD</label>
-        <input type="password" id="confirm" placeholder="Re-enter password"/>
-      </div>
-      <div class="show-row">
-        <input type="checkbox" id="showpw" onchange="toggleShow()">
-        <span>Show passwords</span>
-      </div>
-      <div>
-        <label>GENERATE STRONG PASSWORD</label>
-        <div class="gen-row">
-          <input type="number" id="genlen" value="20" min="16" max="64"/>
-          <button class="btn-gen" onclick="genPassword()">Generate Password</button>
+        <label class="field-label">Confirm Password</label>
+        <div style="position:relative">
+          <input class="input" type="password" id="confirm" placeholder="Re-enter password" style="padding-right:44px"/>
+          <button class="btn-icon" onclick="toggleCreatePw('confirm', this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%)" title="Show password">👁</button>
         </div>
       </div>
-      <button class="btn btn-primary" onclick="doCreate()">CREATE ACCOUNT</button>
-      <button class="btn btn-ghost" onclick="location.href='/login'">← Back to Login</button>
+
+      <div>
+        <label class="field-label">Generate Strong Password</label>
+        <div class="gen-row">
+          <input class="gen-len" type="number" id="genlen" value="20" min="16" max="64"/>
+          <button class="btn btn-ghost" onclick="genPassword()">Generate</button>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-full" onclick="doCreate()">Create Account</button>
+      <button class="link-btn" onclick="location.href='/login'" style="display:flex;align-items:center;justify-content:center;gap:6px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Back to Login
+      </button>
     </div>
   </div>
 </div>
 
-<!-- 2FA Setup Modal -->
 <div class="modal" id="qrModal">
-  <div class="modal-card">
-    <div class="modal-header">
+  <div class="modal-box">
+    <div class="modal-head">
       <h2>Set Up Two-Factor Auth</h2>
-      <p>Scan the QR code with your authenticator app</p>
+      <p>Scan the QR code with Google Authenticator or Authy</p>
     </div>
-    <div class="modal-body" id="qrBody">
-      <img id="qrImg" src="" alt="QR Code" width="180" height="180"/>
-      <p style="font-size:0.8rem;color:var(--muted);text-align:center">Enter the 6-digit code to confirm setup</p>
+    <div class="modal-body" style="align-items:center;text-align:center">
+      <img class="qr-img" id="qrImg" src="" width="180" height="180" alt="QR Code"/>
+      <p style="font-size:0.83rem;color:var(--text2)">Enter the 6-digit code to confirm setup</p>
       <input class="otp-input" id="setupCode" maxlength="6" placeholder="000000"/>
-      <div class="status" id="setupStatus"></div>
-      <button class="btn btn-primary" onclick="verify2FA()" style="width:100%;height:40px">VERIFY &amp; COMPLETE SETUP</button>
+      <div style="font-size:0.82rem;color:var(--danger);min-height:18px" id="setupStatus"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-primary" onclick="verify2FA()">Verify & Complete</button>
     </div>
   </div>
 </div>
 
-<!-- Backup Codes Modal -->
 <div class="modal" id="backupModal">
-  <div class="modal-card">
-    <div class="modal-header">
+  <div class="modal-box">
+    <div class="modal-head">
       <h2>Save Your Backup Codes</h2>
-      <p>Each code can only be used once — store them safely</p>
+      <p>Each code can only be used once. Store them somewhere safe</p>
     </div>
     <div class="modal-body">
       <div class="codes-grid" id="codesGrid"></div>
-      <div class="modal-row">
-        <button class="btn btn-ghost" onclick="saveCodes()">Save to File</button>
-        <button class="btn btn-success" onclick="location.href='/login'">Done →</button>
-      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="saveCodes()">Save to File</button>
+      <button class="btn btn-success" onclick="location.href='/login'">Done →</button>
     </div>
   </div>
 </div>
 
-<script>
-let _codes = [];
-
-function toggleShow() {
-  const t = document.getElementById('showpw').checked ? 'text' : 'password';
-  document.getElementById('password').type = t;
-  document.getElementById('confirm').type = t;
-}
-
-function checkStrength() {
-  const pwd = document.getElementById('password').value;
-  const bar = document.getElementById('sbar');
-  const txt = document.getElementById('stext');
-  if (!pwd) { bar.style.width='0'; txt.textContent='Strength: —'; txt.style.color='var(--muted)'; return; }
-  let score = 0;
-  if (pwd.length >= 16) score += 40;
-  else if (pwd.length >= 12) score += 25;
-  else score += pwd.length * 2;
-  if (/[a-z]/.test(pwd)) score += 10;
-  if (/[A-Z]/.test(pwd)) score += 10;
-  if (/[0-9]/.test(pwd)) score += 10;
-  if (/[^a-zA-Z0-9]/.test(pwd)) score += 15;
-  if (new Set(pwd).size > 10) score += 10;
-  score = Math.min(score, 99);
-  const lbl = score < 40 ? 'Weak' : score < 70 ? 'Medium' : 'Strong';
-  const col = score < 40 ? 'var(--danger)' : score < 70 ? 'var(--warning)' : 'var(--success)';
-  bar.style.width = score + '%';
-  bar.style.background = col;
-  txt.textContent = `Strength: ${lbl} (${score}%)`;
-  txt.style.color = col;
-}
-
-function genPassword() {
-  const len = Math.max(16, parseInt(document.getElementById('genlen').value) || 20);
-  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
-  let pwd = '';
-  const arr = new Uint32Array(len);
-  crypto.getRandomValues(arr);
-  for (let i = 0; i < len; i++) pwd += chars[arr[i] % chars.length];
-  document.getElementById('password').value = pwd;
-  document.getElementById('confirm').value = pwd;
-  document.getElementById('password').type = 'text';
-  document.getElementById('confirm').type = 'text';
-  document.getElementById('showpw').checked = true;
-  checkStrength();
-}
-
-function showErr(msg) {
-  const e = document.getElementById('err');
-  e.textContent = msg; e.style.display = 'block';
-}
-
-async function doCreate() {
-  const u = document.getElementById('username').value.trim();
-  const p = document.getElementById('password').value;
-  const c = document.getElementById('confirm').value;
-  if (!u || !p) { showErr('Username and password are required.'); return; }
-  if (p !== c) { showErr('Passwords do not match.'); return; }
-
-  const res = await fetch('/create-account', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({username:u, password:p, confirm:c})
-  });
-  const data = await res.json();
-  if (!res.ok) { showErr(data.error); return; }
-
-  document.getElementById('qrImg').src = 'data:image/png;base64,' + data.qr;
-  document.getElementById('qrModal').classList.add('active');
-  document.getElementById('setupCode').focus();
-}
-
-async function verify2FA() {
-  const code = document.getElementById('setupCode').value.trim();
-  const status = document.getElementById('setupStatus');
-  if (!code) { status.textContent = 'Enter the code.'; return; }
-
-  const res = await fetch('/setup-2fa', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({code})
-  });
-  const data = await res.json();
-  if (!res.ok) { status.textContent = data.error; return; }
-
-  _codes = data.backup_codes;
-  document.getElementById('qrModal').classList.remove('active');
-  const grid = document.getElementById('codesGrid');
-  grid.innerHTML = '';
-  _codes.forEach(c => {
-    const d = document.createElement('div');
-    d.className = 'code-chip';
-    d.textContent = c;
-    grid.appendChild(d);
-  });
-  document.getElementById('backupModal').classList.add('active');
-}
-
-function saveCodes() {
-  const blob = new Blob([_codes.join('\n')], {type:'text/plain'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'access_guardians_backup_codes.txt';
-  a.click();
-}
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    if (document.getElementById('qrModal').classList.contains('active')) verify2FA();
-    else doCreate();
-  }
-});
-</script>
+<script src="/static/js/create.js"></script>
 </body>
 </html>

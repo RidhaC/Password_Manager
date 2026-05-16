@@ -1,5 +1,5 @@
 import sys, os
-# Add the parent directory (Password_Manager) to the import path
+# Add the parent directory to the import path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from config.settings import database_path
@@ -9,7 +9,7 @@ def create_database():
     conn = sqlite3.connect(database_path)
     cur = conn.cursor()
 
-    # --- accounts table ---
+    # accounts table
     cur.execute("""
     CREATE TABLE IF NOT EXISTS accounts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,7 +20,7 @@ def create_database():
     )
     """)
 
-    # --- vault table ---
+    # vault table
     cur.execute("""
     CREATE TABLE IF NOT EXISTS vault (
         id INTEGER PRIMARY KEY AUTOINCREMENT,

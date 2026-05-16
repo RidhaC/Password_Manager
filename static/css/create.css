@@ -1,0 +1,103 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(124,92,191,0.12) 0%, transparent 60%),
+    var(--bg);
+}
+
+.create-wrap {
+  width: 100%;
+  max-width: 420px;
+}
+
+.brand {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.brand-icon {
+  width: 56px; height: 56px;
+  background: linear-gradient(135deg, var(--purple), var(--blue));
+  border-radius: var(--radius-lg);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1rem;
+  box-shadow: var(--shadow-purple);
+  font-size: 1.4rem;
+}
+.brand h1 { font-family: var(--sans); font-size: 1.4rem; font-weight: 700; }
+.brand p { font-size: 0.83rem; color: var(--text2); margin-top: 4px; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.show-row {
+  display: flex; align-items: center; gap: 8px; cursor: pointer;
+}
+.show-row input[type=checkbox] {
+  width: 16px; height: 16px;
+  accent-color: var(--purple); cursor: pointer;
+}
+.show-row span { font-size: 0.85rem; color: var(--text2); }
+
+.gen-row {
+  display: flex; gap: 8px; align-items: center;
+}
+.gen-len {
+  width: 72px; height: 40px;
+  background: var(--surface2);
+  border: 1.5px solid var(--border2);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 0.88rem;
+  padding: 0 10px;
+  outline: none;
+}
+.gen-len:focus { border-color: var(--purple); }
+
+.link-btn {
+  background: none; border: none;
+  color: var(--purple-light);
+  font-size: 0.85rem; font-weight: 500;
+  cursor: pointer; text-align: center;
+  padding: 4px; transition: color 0.2s;
+}
+.link-btn:hover { color: var(--text); }
+
+.qr-img {
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border2);
+  display: block;
+  margin: 0 auto;
+}
+
+.codes-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+}
+.code-chip {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--purple-light);
+  text-align: center;
+  padding: 10px 8px;
+  letter-spacing: 0.08em;
+}
+
+.page { padding-top: 40px; }

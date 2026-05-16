@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Settings — Access Guardians</title>
+<link rel="icon" href="/static/favicon.ico"/>
+<link rel="stylesheet" href="/static/css/base.css"/>
+<link rel="stylesheet" href="/static/css/settings.css"/>
+</head>
+<body>
+<div class="titlebar">
+  <img src="/static/logo_transparent.png"/>
+  <span>Access Guardians</span>
+</div>
+
+<div class="settings-layout">
+
+  <aside class="settings-nav">
+    <div class="settings-nav-top">
+      <div class="settings-avatar">{{ username[0] | upper }}</div>
+      <div class="settings-username">{{ username }}</div>
+    </div>
+    <nav>
+      <button class="nav-item active" onclick="showSection('profile')">👤 Profile</button>
+      <button class="nav-item" onclick="showSection('security')">🔒 Security</button>
+      <button class="nav-item" onclick="showSection('categories')">🏷️ Categories</button>
+      <button class="nav-item" onclick="showSection('import')">📥 Import</button>
+      <button class="nav-item" onclick="showSection('appearance')">🎨 Appearance</button>
+    </nav>
+    <div class="settings-nav-footer">
+      <button class="back-btn" onclick="location.href='/vault'" style="display:flex;align-items:center;justify-content:center;gap:6px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back to Vault
+      </button>
+    </div>
+  </aside>
+
+  <main class="settings-main">
+
+    <section class="section active" id="section-profile">
+      <div class="section-title">Profile</div>
+      <div class="section-desc">Update your personal information</div>
+      <div class="setting-card">
+        <div class="setting-row">
+          <div class="setting-field">
+            <label class="field-label">First Name</label>
+            <input class="input" id="firstName" value="{{ profile.first_name }}" placeholder="Enter first name"/>
+          </div>
+          <div class="setting-field">
+            <label class="field-label">Last Name</label>
+            <input class="input" id="lastName" value="{{ profile.last_name }}" placeholder="Enter last name"/>
+          </div>
+        </div>
+        <div class="setting-field" style="margin-top:1rem">
+          <label class="field-label">Email</label>
+          <input class="input" id="email" value="{{ profile.email }}" placeholder="Enter email address"/>
+        </div>
+        <div class="setting-field" style="margin-top:1rem">
+          <label class="field-label">Username</label>
+          <input class="input" value="{{ username }}" disabled style="opacity:0.5;cursor:not-allowed"/>
+          <div style="font-size:0.75rem;color:var(--text3);margin-top:4px">Username cannot be changed</div>
+        </div>
+        <div style="margin-top:1.5rem;display:flex;align-items:center;gap:12px">
+          <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+          <div class="save-status" id="profileStatus"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="section-security">
+      <div class="section-title">Security</div>
+      <div class="section-desc">Manage your password and authentication</div>
+
+      <div class="setting-card">
+        <div class="card-label">Change Master Password</div>
+        <div class="setting-field" style="margin-top:1rem">
+          <label class="field-label">Current Password</label>
+          <input class="input" type="password" id="oldPw" placeholder="Enter current password"/>
+        </div>
+        <div class="setting-field" style="margin-top:1rem">
+          <label class="field-label">New Password</label>
+          <div style="position:relative">
+            <input class="input" type="password" id="newPw" placeholder="Min 16 chars" oninput="checkPwStrength()" style="padding-right:44px"/>
+            <button class="btn-icon" onclick="toggleNewPw(this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%)" title="Show password">👁</button>
+          </div>
+          <div class="strength-track" style="margin-top:8px"><div class="strength-fill" id="pwBar"></div></div>
+          <div class="strength-label" id="pwStrength">Strength: —</div>
+        </div>
+        <div class="setting-field" style="margin-top:1rem">
+          <label class="field-label">Confirm New Password</label>
+          <div style="position:relative">
+            <input class="input" type="password" id="confirmPw" placeholder="Re-enter new password" style="padding-right:44px"/>
+            <button class="btn-icon" onclick="toggleConfirmPw(this)" style="position:absolute;right:6px;top:50%;transform:translateY(-50%)" title="Show password">👁</button>
+          </div>
+        </div>
+        <div class="setting-field" style="margin-top:1rem">
+          <label class="field-label">Generate Password</label>
+          <div style="display:flex;gap:8px">
+            <input type="number" id="pwGenLen" value="20" min="16" max="64" style="width:72px;height:40px;background:var(--surface2);border:1.5px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:0 10px;outline:none;font-size:0.88rem"/>
+            <button class="btn btn-ghost" onclick="genNewPassword()">Generate</button>
+          </div>
+        </div>
+        <div style="margin-top:1.5rem;display:flex;align-items:center;gap:12px">
+          <button class="btn btn-primary" onclick="savePassword()">Update Password</button>
+          <div class="save-status" id="pwStatus"></div>
+        </div>
+      </div>
+
+      <div class="setting-card" style="margin-top:1rem">
+        <div class="card-label">Two-Factor Authentication</div>
+        <div style="font-size:0.85rem;color:var(--text2);margin-top:0.5rem;line-height:1.6">
+          2FA is <strong style="color:var(--success)">enabled</strong> on your account. 
+          Your session is remembered for 30 days after each verification
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="section-categories">
+      <div class="section-title">Categories</div>
+      <div class="section-desc">Manage your password categories</div>
+
+      <div class="setting-card">
+        <div class="card-label">All Categories</div>
+        <div style="font-size:0.78rem;color:var(--text3);margin-top:4px;margin-bottom:1rem">Default categories can be hidden. Custom ones can be removed</div>
+        <div id="allCatList"></div>
+        <div class="add-cat-row" style="margin-top:1rem">
+            <input class="input" id="catName" placeholder="Category name" style="flex:1"/>
+            <input class="input" id="catIcon" placeholder="Emoji" style="width:72px;text-align:center"/>
+            <input class="input" id="catColor" type="color" value="#7c5cbf" style="width:52px;height:44px;padding:4px;cursor:pointer"/>
+            <button class="btn btn-primary" onclick="addCategory()">+ Add</button>
+        </div>
+        <div class="save-status" id="catStatus" style="margin-top:8px"></div>
+      </div>
+    </section>
+
+    <section class="section" id="section-import">
+      <div class="section-title">Import</div>
+      <div class="section-desc">Import passwords from other password managers</div>
+
+      <div class="setting-card" style="margin-top:1rem">
+        <div class="card-label">Upload File</div>
+        <div style="margin-top:1rem;display:flex;flex-direction:column;gap:1rem">
+          <div>
+            <label class="field-label">Select Source</label>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">
+              <button class="import-source-btn active" onclick="selectSource('auto', this)">Auto-detect</button>
+              <button class="import-source-btn" onclick="selectSource('proton', this)">🟣 Proton Pass</button>
+              <button class="import-source-btn" onclick="selectSource('bitwarden', this)">🔵 Bitwarden</button>
+              <button class="import-source-btn" onclick="selectSource('lastpass', this)">🔴 LastPass</button>
+              <button class="import-source-btn" onclick="selectSource('1password', this)">🟡 1Password</button>
+              <button class="import-source-btn" onclick="selectSource('chrome', this)">🌐 Chrome / Firefox</button>
+              <button class="import-source-btn" onclick="selectSource('generic', this)">📄 Generic CSV</button>
+            </div>
+            <input type="hidden" id="importSource" value="auto"/>
+          </div>
+          <div>
+            <label class="field-label">CSV File</label>
+            <input type="file" id="importFile" accept=".csv" style="display:none" onchange="handleFileChange(this)"/>
+            <div style="height:40px;display:flex;align-items:center;border:1.5px solid var(--border2);border-radius:var(--radius-sm);overflow:hidden;background:var(--surface2)">
+              <label for="importFile" style="height:100%;padding:0 14px;background:var(--surface3);border-right:1.5px solid var(--border2);color:var(--text2);font-size:0.82rem;font-weight:500;cursor:pointer;display:flex;align-items:center;white-space:nowrap;flex-shrink:0">Choose File</label>
+              <span id="importFileName" style="padding:0 14px;font-size:0.82rem;color:var(--text3)">No file chosen</span>
+            </div>
+          </div>
+          <div id="importPreview" style="display:none">
+            <div class="card-label" style="margin-bottom:0.5rem">Preview <span id="importCount" style="color:var(--purple-light)"></span></div>
+            <div id="importList" style="max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:4px"></div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn btn-ghost" id="previewBtn" onclick="previewImport()" style="height:34px;padding:0 14px;font-size:0.8rem;display:none">Preview</button>
+            <button class="btn btn-primary" id="importBtn" onclick="doImport()" style="height:34px;padding:0 14px;font-size:0.8rem;display:none">Import All</button>
+            <div class="save-status" id="importStatus"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="section-appearance">
+      <div class="section-title">Appearance</div>
+      <div class="section-desc">Customize how Access Guardians looks</div>
+
+      <div class="setting-card">
+        <div class="card-label">Theme</div>
+        <div class="theme-options" style="margin-top:1rem">
+          <div class="theme-card {{ 'active' if profile.theme == 'dark' else '' }}" onclick="setTheme('dark')">
+            <div class="theme-preview dark-preview"></div>
+            <div class="theme-label">Dark</div>
+          </div>
+          <div class="theme-card {{ 'active' if profile.theme == 'light' else '' }}" onclick="setTheme('light')">
+            <div class="theme-preview light-preview"></div>
+            <div class="theme-label">Light</div>
+          </div>
+          <div class="theme-card {{ 'active' if profile.theme == 'midnight' else '' }}" onclick="setTheme('midnight')">
+            <div class="theme-preview midnight-preview"></div>
+            <div class="theme-label">Midnight</div>
+          </div>
+        </div>
+        <div class="save-status" id="themeStatus" style="margin-top:1rem"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="modal" id="loadingModal">
+  <div class="modal-box" style="width:300px;text-align:center">
+    <div class="modal-body" style="align-items:center;gap:1.25rem;padding:2rem" id="loadingBody">
+      <div class="spinner"></div>
+      <div>
+        <div style="font-family:var(--sans);font-weight:600;font-size:1rem">Importing passwords...</div>
+        <div style="font-size:0.82rem;color:var(--text3);margin-top:4px">Please wait</div>
+      </div>
+    </div>
+    <div class="modal-body" style="align-items:center;gap:1.25rem;padding:2rem;display:none" id="successBody">
+      <div style="width:44px;height:44px;border-radius:50%;background:var(--success-dim);border:1.5px solid var(--success);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div>
+        <div style="font-family:var(--sans);font-weight:600;font-size:1rem" id="successMsg"></div>
+        <div style="font-size:0.82rem;color:var(--text3);margin-top:4px">Redirecting to vault...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="/static/js/settings.js"></script>
+</body>
+</html>
